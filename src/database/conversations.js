@@ -11,7 +11,7 @@ async function getConversationHistory(userId) {
       .select("role, content")
       .eq("user_id", userId)
       .order("created_at", { ascending: false })
-      .limit(MAX_CONVERSATION_HISTORY * 2);
+      .limit(MAX_CONVERSATION_HISTORY * 5);
 
     if (error) throw error;
 
