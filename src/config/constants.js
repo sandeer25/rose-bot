@@ -8,13 +8,13 @@ module.exports = {
 
   // Typing delays (in ms)
   MIN_TYPING_DELAY: 1000,
-  MAX_TYPING_DELAY: 4000,
-  TYPING_SPEED: 50, // ms per character
+  MAX_TYPING_DELAY: 8000,
+  TYPING_SPEED: 200, // ms per character
 
   // AI settings
   AI_MODEL: "llama-3.3-70b-versatile",
   AI_TEMPERATURE: 1.1,
-  AI_MAX_TOKENS: 80,
+  AI_MAX_TOKENS: 60,
 
   // Relationship status levels
   RELATIONSHIP_STATUS: {
