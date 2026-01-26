@@ -64,8 +64,28 @@ async function getAIResponse(userId, userName, userMessage, isNewUser = false) {
 
     return response;
   } catch (error) {
-    console.error("Groq API Error:", error.message);
-    return "...";
+    console.error("Groq API Error:", error);
+
+    if (error?.status === 429 || error?.code === "rate_limit_exceeded") {
+      const match = error.message?.match(/try again in (\d+)m(\d+)?/i);
+
+      let waitText = "a few minutes";
+
+      if (match) {
+        const minutes = parseInt(match[1], 10);
+        const seconds = match[2] ? parseInt(match[2], 10) : 0;
+
+        // round UP if there are any seconds
+        const roundedMinutes = seconds > 0 ? minutes + 1 : minutes;
+
+        waitText =
+          roundedMinutes === 1 ? "a minute" : `${roundedMinutes} minutes`;
+      }
+
+      return `ugh babe 😩 gimme ${waitText}, I’ll be right back 💕`;
+    }
+
+    return "oh babe something feels off 😕 gimme a sec, I’ll fix it";
   }
 }
 
