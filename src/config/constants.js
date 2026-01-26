@@ -14,7 +14,7 @@ module.exports = {
   // AI settings
   AI_MODEL: "llama-3.3-70b-versatile",
   AI_TEMPERATURE: 1.1,
-  AI_MAX_TOKENS: 60,
+  AI_MAX_TOKENS: 80,
 
   // Relationship status levels
   RELATIONSHIP_STATUS: {
