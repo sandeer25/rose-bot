@@ -12,7 +12,7 @@ module.exports = {
   TYPING_SPEED: 200,
 
   // AI settings
-  AI_MODEL: "llama-3.3-70b-versatile",
+  AI_MODEL: "llama-3.1-8b-instant",
   AI_TEMPERATURE: 1.1,
   AI_MAX_TOKENS: 60,
 
