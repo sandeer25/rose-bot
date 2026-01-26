@@ -1,15 +1,15 @@
 module.exports = {
   // Memory settings
-  MAX_CONVERSATION_HISTORY: 10,
-  MAX_STORED_MESSAGES: 50,
+  MAX_CONVERSATION_HISTORY: 6,
+  MAX_STORED_MESSAGES: 20,
 
   // Response behavior
-  RANDOM_RESPONSE_CHANCE: 0.6,
+  RANDOM_RESPONSE_CHANCE: 0.3,
 
   // Typing delays (in ms)
   MIN_TYPING_DELAY: 1000,
   MAX_TYPING_DELAY: 8000,
-  TYPING_SPEED: 200, // ms per character
+  TYPING_SPEED: 200,
 
   // AI settings
   AI_MODEL: "llama-3.3-70b-versatile",
