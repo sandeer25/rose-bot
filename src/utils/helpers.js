@@ -53,59 +53,52 @@ function shouldRespond(message, isGroup, botInfo) {
 // Analyze message sentiment
 function analyzeSentiment(message) {
   const text = message.toLowerCase();
-
-  // Positive keywords
+  
+  // Positive keywords (expanded)
   const positiveWords = [
-    "love",
-    "cute",
-    "beautiful",
-    "pretty",
-    "sweet",
-    "amazing",
-    "awesome",
-    "thanks",
-    "thank you",
-    "appreciate",
-    "gorgeous",
-    "perfect",
-    "wonderful",
-    "best",
+    'love', 'cute', 'beautiful', 'pretty', 'sweet', 'amazing', 'awesome', 
+    'thanks', 'thank you', 'appreciate', 'gorgeous', 'perfect', 'wonderful', 
+    'best', 'great', 'nice', 'good', 'like', 'happy', 'haha', 'lol', 'lmao',
+    'cool', 'fun', 'buddy', 'friend', 'bro', 'sis', 'hey', 'hi', 'hello',
+    'miss you', 'thinking of you', 'excited', 'smile', '😊', '😂', '🥰', 
+    '💕', '❤️', '💖', '😘', '🤗', '👍', '✨', '🔥'
   ];
-  const veryPositiveWords = ["adore", "obsessed", "incredible", "stunning"];
-
-  // Negative keywords
+  
+  const veryPositiveWords = [
+    'adore', 'obsessed', 'incredible', 'stunning', 'marry', 'forever',
+    'soulmate', 'everything', 'world', 'dream', 'angel'
+  ];
+  
+  // Negative keywords  
   const negativeWords = [
-    "hate",
-    "ugly",
-    "stupid",
-    "dumb",
-    "idiot",
-    "annoying",
-    "shut up",
-    "fuck off",
+    'hate', 'ugly', 'stupid', 'dumb', 'idiot', 'annoying', 'shut up', 
+    'fuck off', 'boring', 'lame', 'terrible', 'worst', 'bad'
   ];
-  const veryNegativeWords = ["bitch", "ass", "shit", "pathetic", "loser"];
-
+  
+  const veryNegativeWords = [
+    'bitch', 'ass', 'shit', 'pathetic', 'loser', 'worthless', 'die', 'kill'
+  ];
+  
   let score = 0;
-
+  
   // Check very positive
-  if (veryPositiveWords.some((word) => text.includes(word))) {
-    score += SENTIMENT.VERY_POSITIVE;
-  }
+  const veryPosCount = veryPositiveWords.filter(word => text.includes(word)).length;
+  score += veryPosCount * SENTIMENT.VERY_POSITIVE;
+  
   // Check positive
-  else if (positiveWords.some((word) => text.includes(word))) {
-    score += SENTIMENT.POSITIVE;
-  }
-
+  const posCount = positiveWords.filter(word => text.includes(word)).length;
+  score += posCount * SENTIMENT.POSITIVE;
+  
   // Check very negative
-  if (veryNegativeWords.some((word) => text.includes(word))) {
-    score += SENTIMENT.VERY_NEGATIVE;
-  }
+  const veryNegCount = veryNegativeWords.filter(word => text.includes(word)).length;
+  score += veryNegCount * SENTIMENT.VERY_NEGATIVE;
+  
   // Check negative
-  else if (negativeWords.some((word) => text.includes(word))) {
-    score += SENTIMENT.NEGATIVE;
-  }
+  const negCount = negativeWords.filter(word => text.includes(word)).length;
+  score += negCount * SENTIMENT.NEGATIVE;
 
+  console.log(`Sentiment analysis for "${text}": score = ${score}`);
+  
   return score;
 }
 
