@@ -54,32 +54,54 @@ function shouldRespond(message, isGroup, botInfo) {
 function analyzeSentiment(message) {
   const text = message.toLowerCase();
   
-  // Positive keywords (expanded)
+  // Sexual/flirty content (positive in Rose's context)
+  const sexualFlirtyWords = [
+    'dick', 'cock', 'pussy', 'tits', 'ass', 'fuck', 'sex', 'sexy', 
+    'hot', 'horny', 'hard', 'wet', 'cum', 'suck', 'touch', 'kiss',
+    'babe', 'baby', 'daddy', 'mommy', 'please', 'want you', 'need you',
+    'make love', 'sleep with', 'bed', 'naked', 'nude', 'body',
+    'finish', 'help me', 'soft', 'gentle', 'ready', 'waiting',
+    'breast', 'boobs', 'booty', 'play', 'tease', 'desire', 'lust',
+    'feel', 'stroke', 'lick', 'bite', 'moan', 'ride', 'deep',
+    'inside', 'tight', 'harder', 'faster', 'slow down', 'edge'
+  ];
+  
+  // Positive keywords
   const positiveWords = [
     'love', 'cute', 'beautiful', 'pretty', 'sweet', 'amazing', 'awesome', 
     'thanks', 'thank you', 'appreciate', 'gorgeous', 'perfect', 'wonderful', 
     'best', 'great', 'nice', 'good', 'like', 'happy', 'haha', 'lol', 'lmao',
     'cool', 'fun', 'buddy', 'friend', 'bro', 'sis', 'hey', 'hi', 'hello',
-    'miss you', 'thinking of you', 'excited', 'smile', '😊', '😂', '🥰', 
-    '💕', '❤️', '💖', '😘', '🤗', '👍', '✨', '🔥'
+    'miss you', 'thinking of you', 'excited', 'smile', 'definitely', 'yes',
+    '😊', '😂', '🥰', '💕', '❤️', '💖', '😘', '🤗', '👍', '✨', '🔥'
   ];
   
   const veryPositiveWords = [
     'adore', 'obsessed', 'incredible', 'stunning', 'marry', 'forever',
-    'soulmate', 'everything', 'world', 'dream', 'angel'
+    'soulmate', 'everything', 'world', 'dream', 'angel', 'goddess',
+    'heaven', 'divine', 'worship'
   ];
   
-  // Negative keywords  
+  // Negative keywords (actually negative - not sexual)
   const negativeWords = [
     'hate', 'ugly', 'stupid', 'dumb', 'idiot', 'annoying', 'shut up', 
-    'fuck off', 'boring', 'lame', 'terrible', 'worst', 'bad'
+    'fuck off', 'boring', 'lame', 'terrible', 'worst', 'bad', 'no way',
+    'never', 'disgusting', 'gross', 'leave me', 'go away'
   ];
   
   const veryNegativeWords = [
-    'bitch', 'ass', 'shit', 'pathetic', 'loser', 'worthless', 'die', 'kill'
+    'bitch', 'pathetic', 'loser', 'worthless', 'die', 'kill',
+    'slut', 'whore', 'trash'
   ];
   
   let score = 0;
+  
+  // Check sexual/flirty content (these are POSITIVE in Rose's context)
+  const sexualCount = sexualFlirtyWords.filter(word => text.includes(word)).length;
+  if (sexualCount > 0) {
+    // More sexual words = more positive
+    score += Math.min(sexualCount, 3) * SENTIMENT.POSITIVE;
+  }
   
   // Check very positive
   const veryPosCount = veryPositiveWords.filter(word => text.includes(word)).length;
@@ -89,15 +111,19 @@ function analyzeSentiment(message) {
   const posCount = positiveWords.filter(word => text.includes(word)).length;
   score += posCount * SENTIMENT.POSITIVE;
   
-  // Check very negative
+  // Check very negative (but NOT if it's used in sexual context)
   const veryNegCount = veryNegativeWords.filter(word => text.includes(word)).length;
-  score += veryNegCount * SENTIMENT.VERY_NEGATIVE;
+  if (veryNegCount > 0 && sexualCount === 0) {
+    score += veryNegCount * SENTIMENT.VERY_NEGATIVE;
+  }
   
-  // Check negative
+  // Check negative (but NOT if there's sexual/positive context)
   const negCount = negativeWords.filter(word => text.includes(word)).length;
-  score += negCount * SENTIMENT.NEGATIVE;
+  if (negCount > 0 && sexualCount === 0 && posCount === 0) {
+    score += negCount * SENTIMENT.NEGATIVE;
+  }
 
-  console.log(`Sentiment analysis for "${text}": score = ${score}`);
+  console.log(`Sentiment: "${text.substring(0, 50)}..." = ${score} (sexual:${sexualCount}, pos:${posCount}, neg:${negCount})`);
   
   return score;
 }

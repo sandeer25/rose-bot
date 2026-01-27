@@ -25,7 +25,7 @@ function estimateTokens(text) {
 }
 
 // Compress conversation history to fit within token budget
-function compressHistory(history, maxTokens = 800) {
+function compressHistory(history, maxTokens = 600) {
   if (!history || history.length === 0) return [];
 
   let totalTokens = 0;
@@ -47,45 +47,46 @@ function compressHistory(history, maxTokens = 800) {
   return compressed;
 }
 
-// Create a compact system prompt
-function getCompactSystemPrompt(relationshipContext, isNewUser, userName) {
-  // Much shorter base personality
-  const compactBase = `You're Rose, a 20s girl. Flirty, confident, sexually open.
+// Create system prompt
+function getSystemPrompt(relationshipContext, isNewUser, userName, userRelationship) {
+  const basePersonality = getPersonalityWithContext(relationshipContext, isNewUser, userName);
+  
+  // Add relationship status context
+  const relationshipInfo = `\n\nCURRENT DYNAMIC WITH ${userName}:
+- Status: ${userRelationship.relationship_status}
+- Vibe score: ${userRelationship.sentiment_score.toFixed(0)} (higher = more positive history)
+${relationshipContext}`;
 
-STYLE: Short (1-2 lines), casual, Gen Z slang, lowercase
-MOOD: Match their vibe - flirty, playful, or call out BS
-${relationshipContext}
-Current user: ${userName}${isNewUser ? " (new person, feel them out)" : ""}`;
-
-  return compactBase;
+  return basePersonality + relationshipInfo;
 }
 
 async function getAIResponse(userId, userName, userMessage, isNewUser = false) {
   try {
-    // Get only recent history and compress it
+    // Get conversation history
     const fullHistory = await getConversationHistory(userId);
-    const recentHistory = fullHistory.slice(-6); // Only last 3 exchanges (6 messages)
-    const compressedHistory = compressHistory(recentHistory, 600); // Max 600 tokens for history
+    const recentHistory = fullHistory.slice(-8); // Last 4 exchanges
+    const compressedHistory = compressHistory(recentHistory, 500);
 
+    // Get user relationship data
     const userRelationship = await getUserRelationshipStatus(userId);
     const boyfriends = await getAllBoyfriends();
 
-    // Build compact relationship context
+    // Build relationship context
     let relationshipContext = "";
     if (boyfriends.length > 0) {
       const bfNames = boyfriends.map((bf) => bf.first_name).join(", ");
-      relationshipContext = `\nYou're with: ${bfNames}. You're loyal to them.`;
+      relationshipContext = `\nYou're currently with: ${bfNames} (but you're playful/flirty with others too)`;
     }
-    relationshipContext += `\nWith ${userName}: ${userRelationship.relationship_status} (score: ${userRelationship.sentiment_score.toFixed(0)})`;
 
-    // Use compact system prompt
-    const systemPrompt = getCompactSystemPrompt(
+    // Create system prompt
+    const systemPrompt = getSystemPrompt(
       relationshipContext,
       isNewUser,
       userName,
+      userRelationship
     );
 
-    // Build minimal message array
+    // Build message array
     const messages = [
       { role: "system", content: systemPrompt },
       ...compressedHistory,
@@ -97,7 +98,7 @@ async function getAIResponse(userId, userName, userMessage, isNewUser = false) {
       (sum, msg) => sum + estimateTokens(msg.content),
       0,
     );
-    console.log(`Estimated input tokens: ${estimatedInputTokens}`);
+    console.log(`Est. tokens: ${estimatedInputTokens}`);
 
     const chatCompletion = await groq.chat.completions.create({
       messages: messages,
@@ -108,7 +109,7 @@ async function getAIResponse(userId, userName, userMessage, isNewUser = false) {
 
     const response = chatCompletion.choices[0]?.message?.content || "...";
 
-    // Save only the essentials to DB
+    // Save conversation
     await saveMessage(userId, "user", `${userName}: ${userMessage}`);
     await saveMessage(userId, "assistant", response);
 
@@ -124,18 +125,14 @@ async function getAIResponse(userId, userName, userMessage, isNewUser = false) {
       if (match) {
         const minutes = parseInt(match[1], 10);
         const seconds = match[2] ? parseInt(match[2], 10) : 0;
-
-        // round UP if there are any seconds
         const roundedMinutes = seconds > 0 ? minutes + 1 : minutes;
-
-        waitText =
-          roundedMinutes === 1 ? "a minute" : `${roundedMinutes} minutes`;
+        waitText = roundedMinutes === 1 ? "a minute" : `${roundedMinutes} minutes`;
       }
 
-      return `ugh babe 😩 gimme ${waitText}, I’ll be right back 💕`;
+      return `ugh babe 😩 gimme ${waitText}, I'll be right back 💕`;
     }
 
-    return "oh babe something feels off 😕 gimme a sec, I’ll fix it";
+    return "fuck, something's off 😕 gimme a sec";
   }
 }
 
