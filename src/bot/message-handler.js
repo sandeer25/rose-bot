@@ -38,6 +38,8 @@ async function handleMessage(bot, msg, botInfo) {
     await bot.sendChatAction(chatId, "typing");
     await new Promise((resolve) => setTimeout(resolve, delay));
 
+    await bot.sendChatAction(chatId, "stop");
+
     const response = await getAIResponse(
       userId,
       firstName,
