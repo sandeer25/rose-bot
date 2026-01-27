@@ -14,7 +14,11 @@ async function initializeWhatsApp() {
 
   sock = makeWASocket({
     auth: state,
-    printQRInTerminal: false, // We'll handle QR display ourselves
+    printQRInTerminal: false,
+    defaultQueryTimeoutMs: 60000, // Change back to 60 seconds
+    getMessage: async (key) => {
+      return { conversation: "" };
+    },
   });
 
   // Handle credentials update
@@ -88,22 +92,29 @@ async function initializeWhatsApp() {
       await handleMessage(
         {
           sendMessage: async (chatId, text) => {
-            // Check if chat has ephemeral settings
-            const message = { text };
-
-            // Try to match the chat's ephemeral setting
             try {
-              const chatSettings = await sock
-                .groupMetadata(chatId)
-                .catch(() => null);
-              if (chatSettings?.ephemeralDuration) {
-                message.ephemeralExpiration = chatSettings.ephemeralDuration;
+              const result = await sock.sendMessage(chatId, { text });
+              console.log(`✓ WhatsApp message sent successfully to ${chatId}`);
+              return result;
+            } catch (error) {
+              console.error(
+                `✗ Failed to send WhatsApp message to ${chatId}:`,
+                error.message,
+              );
+              // Retry once after a short delay
+              await new Promise((resolve) => setTimeout(resolve, 2000));
+              try {
+                const retryResult = await sock.sendMessage(chatId, { text });
+                console.log(`✓ WhatsApp message sent on retry to ${chatId}`);
+                return retryResult;
+              } catch (retryError) {
+                console.error(
+                  `✗ Retry also failed for ${chatId}:`,
+                  retryError.message,
+                );
+                throw retryError;
               }
-            } catch (e) {
-              // Ignore errors, just send normal message
             }
-
-            await sock.sendMessage(chatId, message);
           },
           sendChatAction: async (chatId, action) => {
             if (action === "typing") {
