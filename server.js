@@ -4,6 +4,7 @@ const {
 } = require("./src/bot/telegram");
 const { initializeWhatsApp, stopWhatsApp } = require("./src/bot/whatsapp");
 const { AI_MODEL, RANDOM_RESPONSE_CHANCE } = require("./src/config/constants");
+const { syncSequences } = require("./src/database/conversations");
 
 console.log("Rose v2.1 is starting...");
 
@@ -15,6 +16,18 @@ Promise.all([initTelegram(), initializeWhatsApp()]).then(() => {
   console.log(
     `Responds when mentioned or ${RANDOM_RESPONSE_CHANCE * 100}% randomly`,
   );
+
+  // Sync sequences on startup
+  syncSequences();
+
+  // Sync sequences every hour as backup (active sync happens every 5min during usage)
+  setInterval(
+    async () => {
+      console.log("Running hourly sequence sync backup...");
+      await syncSequences();
+    },
+    60 * 60 * 1000,
+  ); // Every hour
 });
 
 process.on("SIGINT", () => {

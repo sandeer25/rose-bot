@@ -22,6 +22,10 @@ async function getConversationHistory(userId) {
   }
 }
 
+// Track last sync time
+let lastSequenceSync = 0;
+const SYNC_INTERVAL = 5 * 60 * 1000; // 5 minutes
+
 async function saveMessage(userId, role, content) {
   try {
     await supabase.from("conversations").insert({
@@ -32,6 +36,13 @@ async function saveMessage(userId, role, content) {
 
     if (role === "user") {
       await supabase.rpc("increment_message_count", { user_id_param: userId });
+    }
+
+    // Sync sequences every 5 minutes during active usage
+    const now = Date.now();
+    if (now - lastSequenceSync > SYNC_INTERVAL) {
+      lastSequenceSync = now;
+      syncSequences(); // Run async without blocking
     }
 
     // Clean up old messages
@@ -51,7 +62,17 @@ async function saveMessage(userId, role, content) {
   }
 }
 
+async function syncSequences() {
+  try {
+    await supabase.rpc("sync_all_sequences");
+    console.log("✓ Database sequences synced");
+  } catch (error) {
+    console.error("Failed to sync sequences:", error.message);
+  }
+}
+
 module.exports = {
   getConversationHistory,
   saveMessage,
+  syncSequences,
 };
