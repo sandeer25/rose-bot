@@ -63,7 +63,11 @@ function analyzeSentiment(message) {
     'finish', 'help me', 'soft', 'gentle', 'ready', 'waiting',
     'breast', 'boobs', 'booty', 'play', 'tease', 'desire', 'lust',
     'feel', 'stroke', 'lick', 'bite', 'moan', 'ride', 'deep',
-    'inside', 'tight', 'harder', 'faster', 'slow down', 'edge'
+    'inside', 'tight', 'harder', 'faster', 'slow down', 'edge',
+    'closer', 'come here', 'get over', 'oil', 'rub', 'slippery',
+    'scream', 'voice', 'ears', 'sweat', 'taste', 'experience',
+    'wild', 'crazy', 'tied', 'helpless', 'tongue', 'explode',
+    'mmm', 'ahh', 'ohh', 'umm', 'squeeze', 'dripping', 'throbbing'
   ];
   
   // Positive keywords
@@ -73,6 +77,7 @@ function analyzeSentiment(message) {
     'best', 'great', 'nice', 'good', 'like', 'happy', 'haha', 'lol', 'lmao',
     'cool', 'fun', 'buddy', 'friend', 'bro', 'sis', 'hey', 'hi', 'hello',
     'miss you', 'thinking of you', 'excited', 'smile', 'definitely', 'yes',
+    'alright', 'okay', 'sounds good', 'for sure',
     '😊', '😂', '🥰', '💕', '❤️', '💖', '😘', '🤗', '👍', '✨', '🔥'
   ];
   
@@ -86,7 +91,7 @@ function analyzeSentiment(message) {
   const negativeWords = [
     'hate', 'ugly', 'stupid', 'dumb', 'idiot', 'annoying', 'shut up', 
     'fuck off', 'boring', 'lame', 'terrible', 'worst', 'bad', 'no way',
-    'never', 'disgusting', 'gross', 'leave me', 'go away'
+    'disgusting', 'gross', 'leave me', 'go away', 'stop it'
   ];
   
   const veryNegativeWords = [
