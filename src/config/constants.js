@@ -4,7 +4,7 @@ module.exports = {
   MAX_STORED_MESSAGES: 20,
 
   // Response behavior
-  RANDOM_RESPONSE_CHANCE: 0.3,
+  RANDOM_RESPONSE_CHANCE: 0.8,
 
   // Typing delays (in ms)
   MIN_TYPING_DELAY: 1000,
