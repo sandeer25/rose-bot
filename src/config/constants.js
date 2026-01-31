@@ -1,6 +1,6 @@
 module.exports = {
   // Memory settings
-  MAX_CONVERSATION_HISTORY: 6,
+  MAX_CONVERSATION_HISTORY: 4,
   MAX_STORED_MESSAGES: 20,
 
   // Response behavior
@@ -14,9 +14,9 @@ module.exports = {
   // AI settings
   AI_MODEL: "llama-3.1-8b-instant",
   AI_TEMPERATURE: 1.1,
-  AI_MAX_TOKENS: 60,
+  AI_MAX_TOKENS: 40,
 
-  // Relationship status levels (EXPANDED WITH DEMOTION)
+  // Relationship status levels
   RELATIONSHIP_STATUS: {
     // Negative territory (demotion zone)
     BLOCKED: "blocked", // -60 or worse
@@ -29,14 +29,14 @@ module.exports = {
     // Positive territory (promotion zone)
     ACQUAINTANCE: "acquaintance", // 3 to 10
     FRIEND: "friend", // 10 to 25
-    GOOD_FRIEND: "good_friend", // 25 to 50 (NEW)
+    GOOD_FRIEND: "good_friend", // 25 to 50
     CLOSE_FRIEND: "close_friend", // 50 to 70
-    ROMANTIC_INTEREST: "romantic_interest", // 70 to 100 (NEW)
+    ROMANTIC_INTEREST: "romantic_interest", // 70 to 100
     BOYFRIEND: "boyfriend", // 100 to 150
-    SOULMATE: "soulmate", // 150+ (NEW)
+    SOULMATE: "soulmate", // 150+
   },
 
-  // Sentiment thresholds (UPDATED for demotion)
+  // Sentiment thresholds
   SENTIMENT: {
     VERY_POSITIVE: 2.0,
     POSITIVE: 1.0,
